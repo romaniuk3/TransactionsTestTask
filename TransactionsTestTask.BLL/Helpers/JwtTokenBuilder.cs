@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using TransactionsTestTask.BLL.Models;
+using TransactionsTestTask.DAL.Entities;
 
 namespace TransactionsTestTask.BLL.Helpers
 {

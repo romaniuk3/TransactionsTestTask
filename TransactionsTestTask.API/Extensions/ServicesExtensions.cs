@@ -4,6 +4,8 @@ using System.Text;
 using TransactionsTestTask.BLL.Helpers;
 using TransactionsTestTask.BLL.Models;
 using TransactionsTestTask.BLL.Services;
+using TransactionsTestTask.DAL.Data;
+using TransactionsTestTask.DAL.Entities;
 
 namespace TransactionsTestTask.API.Extensions
 {
@@ -56,8 +58,7 @@ namespace TransactionsTestTask.API.Extensions
             services.AddIdentityCore<User>(opt =>
             {
                 opt.User.RequireUniqueEmail = true;
-            }).AddRoles<ApplicationRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
         }
 
     }
