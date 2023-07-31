@@ -60,6 +60,7 @@ namespace TransactionsTestTask.API.Extensions
         {
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IJwtTokenBuilder, JwtTokenBuilder>();
+            services.AddScoped<ITransactionService, TransactionService>();
         }
 
         public static void ConfigureAuthentication(this IServiceCollection services, WebApplicationBuilder builder)
