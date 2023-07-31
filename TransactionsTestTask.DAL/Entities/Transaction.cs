@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 
 namespace TransactionsTestTask.DAL.Entities
 {
-    public class Transaction
+    public class Transaction : BaseEntity
     {
-        public int Id { get; set; }
         public string? Status { get; set; }
         public string? Type { get; set;}
         public string? ClientName { get; set; }
         public decimal Amount { get; set; }
+        public string? UserId { get; set; }
+        public User? User { get; set; }
     }
 }
