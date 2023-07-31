@@ -11,10 +11,10 @@ namespace TransactionsTestTask.BLL.Models
     {
         public ApiException(int statusCode, string? message = null, string? details = null) : base(statusCode)
         {
-            Errors.Add(new KeyValuePair<string, string>("Message ", message ?? "Internal server error. Sorry something went wrong at the server side"));
+            Errors.Add(new KeyValuePair<string, string>("Message", message ?? "Internal server error. Sorry something went wrong at the server side"));
             if (details != null)
             {
-                Errors.Add(new KeyValuePair<string, string>("Details ", message ?? details));
+                Errors.Add(new KeyValuePair<string, string>("Details", message ?? details));
             }
         }
     }

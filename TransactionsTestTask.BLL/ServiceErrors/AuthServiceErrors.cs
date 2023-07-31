@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TransactionsTestTask.BLL.Services
+namespace TransactionsTestTask.BLL.ServiceErrors
 {
-    public interface IAuthService
+    public class AuthServiceErrors
     {
     }
 }

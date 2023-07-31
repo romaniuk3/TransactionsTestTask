@@ -4,6 +4,7 @@ using System.Text;
 using TransactionsTestTask.BLL.Helpers;
 using TransactionsTestTask.BLL.Models;
 using TransactionsTestTask.BLL.Services;
+using TransactionsTestTask.BLL.Services.Contracts;
 using TransactionsTestTask.DAL.Data;
 using TransactionsTestTask.DAL.Entities;
 
