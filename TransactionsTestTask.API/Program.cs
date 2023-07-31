@@ -1,3 +1,4 @@
+using Microsoft.OpenApi.Models;
 using TransactionsTestTask.API.Extensions;
 using TransactionsTestTask.API.Middlewares;
 
@@ -6,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.ConfigureSwagger();
 builder.Services.ConfigureCors();
 builder.Services.ConfigureIdentity();
 builder.Services.RegisterDependencies();
