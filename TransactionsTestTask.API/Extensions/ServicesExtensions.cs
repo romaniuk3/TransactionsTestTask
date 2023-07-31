@@ -28,8 +28,8 @@ namespace TransactionsTestTask.API.Extensions
 
         public static void RegisterDependencies(this IServiceCollection services)
         {
-            services.AddScoped<IJwtTokenBuilder, JwtTokenBuilder>();
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IJwtTokenBuilder, JwtTokenBuilder>();
         }
 
         public static void ConfigureAuthentication(this IServiceCollection services, WebApplicationBuilder builder)
