@@ -33,7 +33,7 @@ namespace TransactionsTestTask.DAL.Data
             {
                 var existingTransaction = await Transactions.FindAsync(transaction.Id);
 
-                if(existingTransaction != null && existingTransaction.Status != transaction.Status)
+                if(existingTransaction != null)
                 {
                     Entry(existingTransaction).CurrentValues.SetValues(transaction);
                 } else

@@ -77,15 +77,6 @@ namespace TransactionsTestTask.BLL.Services
         private async Task SaveTransactions(List<Transaction> transactions)
         {
             await _context.UpsertTransactionsAsync(transactions, _context);
-            /*
-            using var dbTransaction = _context.Database.BeginTransaction();
-            _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Transactions ON");
-
-            await _context.Transactions.AddRangeAsync(transactions);
-            await _context.SaveChangesAsync();
-
-            _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Transactions OFF");
-            dbTransaction.Commit();*/
         }
 
         public ServiceResult<List<Transaction>> GetTransactions(TransactionQueryParameters queryParameters)
@@ -100,11 +91,16 @@ namespace TransactionsTestTask.BLL.Services
 
         private IQueryable<Transaction> FilterByTransactionTypes(IQueryable<Transaction> transactions, List<TransactionType?>? transactionTypes)
         {
-            if (transactionTypes == null || transactionTypes.Count == 0) return transactions;
+            if (!TransactionTypesPassed(transactionTypes)) return transactions;
 
-            var typesToFilterBy = transactionTypes.Select(t => t.ToString()).ToList();
+            var typesToFilterBy = transactionTypes?.Select(t => t.ToString()).ToList();
 
-            return transactions.Where(t => typesToFilterBy.Contains(t.Type!));
+            return transactions.Where(t => typesToFilterBy!.Contains(t.Type!));
+        }
+
+        private bool TransactionTypesPassed(List<TransactionType?>? transactionTypes)
+        {
+            return transactionTypes != null && transactionTypes.FirstOrDefault() != null;
         }
 
         private IQueryable<Transaction> FilterByTransactionStatus(IQueryable<Transaction> transactions, TransactionStatus? transactionStatus)
@@ -116,9 +112,9 @@ namespace TransactionsTestTask.BLL.Services
 
         private IQueryable<Transaction> SearchByClientName(IQueryable<Transaction> transactions, string? clientName)
         {
-            if (clientName == null) return transactions;
+            if (string.IsNullOrEmpty(clientName)) return transactions;
 
-            return transactions.Where(t => t.ClientName == clientName);
+            return transactions.Where(t => t.ClientName!.Contains(clientName));
         }
     }
 }
