@@ -5,6 +5,7 @@ using OfficeOpenXml;
 using TransactionsTestTask.BLL.Enums;
 using TransactionsTestTask.BLL.Helpers;
 using TransactionsTestTask.BLL.Models;
+using TransactionsTestTask.BLL.ServiceErrors;
 using TransactionsTestTask.BLL.Services.Contracts;
 using TransactionsTestTask.DAL.Entities;
 
@@ -56,8 +57,18 @@ namespace TransactionsTestTask.API.Controllers
 
         [HttpPatch]
         [Route("update-status/{transactionId}")]
-        public async Task<IActionResult> UpdateStatus(int transactionId)
+        public async Task<IActionResult> UpdateStatus(int transactionId, TransactionStatus? status)
         {
+            if (status == null)
+            {
+                return BadRequest(new ApiError(400, TransactionServiceErrors.UPDATE_FAILED_INVALID_STATUS));
+            }
+
+            var updateResult = await _transactionService.UpdateStatusAsync(transactionId, status);
+            if (!updateResult.Succeeded)
+            {
+                return BadRequest(new ApiError(400, updateResult.Errors));
+            }
 
             return Ok();
         }

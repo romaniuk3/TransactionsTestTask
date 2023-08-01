@@ -116,5 +116,20 @@ namespace TransactionsTestTask.BLL.Services
 
             return transactions.Where(t => t.ClientName!.Contains(clientName));
         }
+
+        public async Task<ServiceResult> UpdateStatusAsync(int transactionId, TransactionStatus? newStatus)
+        {
+            var getTransactionRequest = $"SELECT * FROM dbo.Transactions WHERE Id = {transactionId}";
+            var transaction = _context.Transactions.FromSqlRaw(getTransactionRequest).FirstOrDefault();
+            if (transaction == null) 
+            {
+                return new ServiceResult(TransactionServiceErrors.TRANSACTION_NOT_FOUND);
+            }
+
+            var updateRequest = $"UPDATE dbo.Transactions SET Status = '{newStatus}' WHERE Id = {transactionId}";
+            await _context.Database.ExecuteSqlRawAsync(updateRequest);
+
+            return new();
+        }
     }
 }
