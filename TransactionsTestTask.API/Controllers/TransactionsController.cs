@@ -45,14 +45,19 @@ namespace TransactionsTestTask.API.Controllers
         /// Export data from database into a csv file
         /// </summary>
         /// <param name="transactionParameters">Parameters to filter transactions by</param>
-        /// <returns>Returns csv file or an error response on failure</returns>
+        /// <returns>Returns csv file in response body to download or an error response on failure</returns>
         /// <response code="400">Returns an error response when the export fails</response>
         [HttpGet]
         [Route("export")]
-        public async Task<IActionResult> ExportToCsv([FromQuery] TransactionQueryParameters transactionParameters)
+        public IActionResult ExportToCsv([FromQuery] TransactionQueryParameters transactionParameters)
         {
+            var exportResult = _transactionService.ExportToCsv(transactionParameters);
+            if (!exportResult.Succeeded)
+            {
+                return BadRequest(new ApiError(400, exportResult.Errors));
+            }
 
-            return Ok();
+            return File(exportResult.Value!, "text/csv", "transactions.csv");
         }
 
         /// <summary>

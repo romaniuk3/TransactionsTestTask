@@ -131,5 +131,18 @@ namespace TransactionsTestTask.BLL.Services
 
             return new();
         }
+
+        public ServiceResult<byte[]> ExportToCsv(TransactionQueryParameters queryParameters)
+        {
+            var transactions = GetTransactions(queryParameters);
+            if (!transactions.Succeeded || transactions.Value?.Count == 0)
+            {
+                return new ServiceResult<byte[]>(TransactionServiceErrors.NO_AVAILABLE_TRANSACTIONS_TO_EXPORT);
+            }
+            
+            var csvData = FileHelper.ConvertTransactionsToCsv(transactions.Value!);
+
+            return new ServiceResult<byte[]>(csvData);
+        }
     }
 }

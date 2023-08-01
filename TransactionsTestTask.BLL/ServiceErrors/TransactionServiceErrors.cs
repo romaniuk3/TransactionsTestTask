@@ -32,5 +32,10 @@ namespace TransactionsTestTask.BLL.ServiceErrors
         {
             new("Update operation failed", "Unsupported transaction status passed.")
         };
+
+        public static List<KeyValuePair<string, string>> NO_AVAILABLE_TRANSACTIONS_TO_EXPORT = new()
+        {
+            new("Export operation failed", "No available transactions to export by given parameters.")
+        };
     }
 }

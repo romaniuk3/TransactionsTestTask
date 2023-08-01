@@ -14,6 +14,7 @@ namespace TransactionsTestTask.BLL.Services.Contracts
     public interface ITransactionService
     {
         Task<ServiceResult> ImportFromExcel(IFormFile excelFile, string? userId);
+        ServiceResult<byte[]> ExportToCsv(TransactionQueryParameters queryParameters);
         ServiceResult<List<Transaction>> GetTransactions(TransactionQueryParameters queryParameters);
         Task<ServiceResult> UpdateStatusAsync(int transactionId, TransactionStatus? status);
     }
