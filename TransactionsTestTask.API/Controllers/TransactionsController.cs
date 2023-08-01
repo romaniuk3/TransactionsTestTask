@@ -11,17 +11,23 @@ using TransactionsTestTask.DAL.Entities;
 
 namespace TransactionsTestTask.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TransactionsController : ControllerBase
     {
         private readonly ITransactionService _transactionService;
-
         public TransactionsController(ITransactionService transactionService)
         {
             _transactionService = transactionService;
         }
 
+        /// <summary>
+        /// Import data from excel file to save it into a database
+        /// </summary>
+        /// <param name="file">The excel document</param>
+        /// <returns>Returns success or an error response on failure</returns>
+        /// <response code="400">Returns an error response when the import fails</response>
         [HttpPost]
         [Route("import")]
         public async Task<IActionResult> ImportExcel(IFormFile file)
@@ -35,14 +41,25 @@ namespace TransactionsTestTask.API.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Export data from database into a csv file
+        /// </summary>
+        /// <param name="transactionParameters">Parameters to filter transactions by</param>
+        /// <returns>Returns csv file or an error response on failure</returns>
+        /// <response code="400">Returns an error response when the export fails</response>
         [HttpGet]
         [Route("export")]
-        public async Task<IActionResult> ExportToCsv()
+        public async Task<IActionResult> ExportToCsv([FromQuery] TransactionQueryParameters transactionParameters)
         {
 
             return Ok();
         }
 
+        /// <summary>
+        /// Get all transactions from database
+        /// </summary>
+        /// <param name="transactionParameters">Parameters to filter transactions by</param>
+        /// <returns>Returns list of transactions filtered by parameters</returns>
         [HttpGet]
         public IActionResult GetAll([FromQuery] TransactionQueryParameters transactionParameters)
         {
@@ -55,6 +72,13 @@ namespace TransactionsTestTask.API.Controllers
             return Ok(result.Value);
         }
 
+        /// <summary>
+        /// Update transaction status
+        /// </summary>
+        /// <param name="transactionId">The ID of a transaction is to be updated.</param>
+        /// <param name="status">New status of the transaction.</param>
+        /// <returns>Returns success or an error response on failure</returns>
+        /// <response code="400">Returns an error response when the update fails</response>
         [HttpPatch]
         [Route("update-status/{transactionId}")]
         public async Task<IActionResult> UpdateStatus(int transactionId, TransactionStatus? status)
