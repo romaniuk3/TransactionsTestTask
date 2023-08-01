@@ -35,7 +35,7 @@ namespace TransactionsTestTask.BLL.Services
 
             if (string.IsNullOrEmpty(userId))
             {
-                return new ServiceResult(UserServiceErrors.USER_NOT_FOUND_BY_USERNAME);
+                return new ServiceResult(UserServiceErrors.USER_NOT_FOUND_BY_ID);
             }
 
             var transactions = new List<Transaction>();
@@ -76,6 +76,8 @@ namespace TransactionsTestTask.BLL.Services
 
         private async Task SaveTransactions(List<Transaction> transactions)
         {
+            await _context.UpsertTransactionsAsync(transactions, _context);
+            /*
             using var dbTransaction = _context.Database.BeginTransaction();
             _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Transactions ON");
 
@@ -83,7 +85,7 @@ namespace TransactionsTestTask.BLL.Services
             await _context.SaveChangesAsync();
 
             _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Transactions OFF");
-            dbTransaction.Commit();
+            dbTransaction.Commit();*/
         }
 
         public ServiceResult<List<Transaction>> GetTransactions(TransactionQueryParameters queryParameters)
