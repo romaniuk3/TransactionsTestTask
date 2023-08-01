@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace TransactionsTestTask.BLL.Services.Contracts
 {
     public interface ITransactionService
     {
+        Task<ServiceResult> ImportFromExcel(IFormFile excelFile, string? userId);
         ServiceResult<List<Transaction>> GetTransactions(TransactionQueryParameters queryParameters);
     }
 }

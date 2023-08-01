@@ -1,4 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EFCore.BulkExtensions;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +10,7 @@ using System.Threading.Tasks;
 using TransactionsTestTask.BLL.Enums;
 using TransactionsTestTask.BLL.Helpers;
 using TransactionsTestTask.BLL.Models;
+using TransactionsTestTask.BLL.ServiceErrors;
 using TransactionsTestTask.BLL.Services.Contracts;
 using TransactionsTestTask.DAL.Data;
 using TransactionsTestTask.DAL.Entities;
@@ -20,6 +24,66 @@ namespace TransactionsTestTask.BLL.Services
         public TransactionService(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        public async Task<ServiceResult> ImportFromExcel(IFormFile file, string? userId)
+        {
+            if (!FileHelper.IsExcelExtension(file.FileName))
+            {
+                return new ServiceResult(TransactionServiceErrors.INCORRECT_FILE_EXTENSION);
+            }
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                return new ServiceResult(UserServiceErrors.USER_NOT_FOUND_BY_USERNAME);
+            }
+
+            var transactions = new List<Transaction>();
+            using var stream = new MemoryStream();
+            await file.CopyToAsync(stream);
+
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using var package = new ExcelPackage(stream);
+            ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+            var rowCount = worksheet.Dimension.Rows;
+            if (rowCount < 2)
+            {
+                return new ServiceResult(TransactionServiceErrors.INVALID_ROWS_COUNT);
+            }
+
+            for (int row = 2; row <= rowCount; row++)
+            {
+                var decimalAmount = FileHelper.ConvertStringToDecimal(worksheet.Cells[row, 5].Value?.ToString()?.Trim()!);
+                if (decimalAmount == null)
+                {
+                    return new ServiceResult(TransactionServiceErrors.INCORRECT_AMOUNT_VALUE);
+                }
+
+                transactions.Add(new Transaction()
+                {
+                    Id = Convert.ToInt32(worksheet.Cells[row, 1].Value),
+                    Status = worksheet.Cells[row, 2].Value?.ToString()?.Trim(),
+                    Type = worksheet.Cells[row, 3].Value?.ToString()?.Trim(),
+                    ClientName = worksheet.Cells[row, 4].Value?.ToString()?.Trim(),
+                    Amount = decimalAmount,
+                    UserId = userId
+                });
+            }
+            await SaveTransactions(transactions);
+
+            return new();
+        }
+
+        private async Task SaveTransactions(List<Transaction> transactions)
+        {
+            using var dbTransaction = _context.Database.BeginTransaction();
+            _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Transactions ON");
+
+            await _context.Transactions.AddRangeAsync(transactions);
+            await _context.SaveChangesAsync();
+
+            _context.Database.ExecuteSqlRaw("SET IDENTITY_INSERT dbo.Transactions OFF");
+            dbTransaction.Commit();
         }
 
         public ServiceResult<List<Transaction>> GetTransactions(TransactionQueryParameters queryParameters)

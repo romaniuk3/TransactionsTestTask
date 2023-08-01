@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 using TransactionsTestTask.BLL.Enums;
 using TransactionsTestTask.BLL.Helpers;
 using TransactionsTestTask.BLL.Models;
 using TransactionsTestTask.BLL.Services.Contracts;
+using TransactionsTestTask.DAL.Entities;
 
 namespace TransactionsTestTask.API.Controllers
 {
@@ -21,8 +23,14 @@ namespace TransactionsTestTask.API.Controllers
 
         [HttpPost]
         [Route("import")]
-        public async Task<IActionResult> Import()
+        public async Task<IActionResult> ImportExcel(IFormFile file)
         {
+            var importResult = await _transactionService.ImportFromExcel(file, User.FindFirst("id")?.Value);
+            if (!importResult.Succeeded)
+            {
+                return BadRequest(new ApiError(400, importResult.Errors));
+            }
+
             return Ok();
         }
 
@@ -30,6 +38,7 @@ namespace TransactionsTestTask.API.Controllers
         [Route("export")]
         public async Task<IActionResult> ExportToCsv()
         {
+
             return Ok();
         }
 
